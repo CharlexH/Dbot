@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "batch": 6,
+  "scope": {
+    "included": [
+      "completed_job_partial_crawl_resume",
+      "failed_url_only_discovery_retry",
+      "downstream_rebuild_after_resumed_discover"
+    ],
+    "excluded": [
+      "deeper_crawl_depth",
+      "retry_ui",
+      "javascript_rendering",
+      "new_routes",
+      "result_contract_changes"
+    ]
+  },
+  "routes": [
+    {
+      "id": "read_job",
+      "path": "/api/jobs/:jobId",
+      "status": "stable_with_retry_for_failed_and_partial_completed_jobs"
+    },
+    {
+      "id": "results",
+      "path": "/results/:jobId",
+      "status": "stable"
+    }
+  ],
+  "resume": {
+    "source": "lib/jobs.ts#prepareJobForCoverageResume",
+    "trigger": "GET /api/jobs/:jobId?retry=1 on completed jobs with evidence.failures.length > 0",
+    "behavior": [
+      "Preserve successful evidence pages.",
+      "Reset Discover through Validate to pending.",
+      "Clear extracted and result so downstream stages rebuild.",
+      "Retry only previously failed URLs during Discover."
+    ]
+  },
+  "orchestration": {
+    "source": "lib/orchestration.ts#discoverEvidence",
+    "note": "Discover now supports a resume mode that retries only existing failed URLs and merges recovered pages into evidence."
+  },
+  "jobContract": {
+    "source": "types/dbot.ts#JobRecord",
+    "status": "unchanged_for_ui",
+    "note": "Batch 5 retry metadata remains the only contract addition."
+  },
+  "tests": {
+    "updated": [
+      "test/job-lifecycle.test.ts",
+      "test/job-api.test.ts"
+    ],
+    "full_suite": [
+      "test/domain.test.ts",
+      "test/export-generation.test.ts",
+      "test/job-lifecycle.test.ts",
+      "test/orchestration.test.ts",
+      "test/job-api.test.ts",
+      "test/results-page.test.tsx",
+      "test/workbench.test.tsx",
+      "test/homepage.test.tsx",
+      "test/url-submit.test.tsx"
+    ]
+  },
+  "verification": {
+    "commands": [
+      "npm test",
+      "npm run lint",
+      "npm run build",
+      "npm run typecheck"
+    ],
+    "status": "passing"
+  },
+  "nextBatchRecommended": [
+    "Expand evidence capture beyond the tiny same-origin page set while preserving the current route/workbench contract.",
+    "Decide whether later-stage retries should preserve or rebuild downstream derived state more explicitly.",
+    "Consider surfacing retry/resume in the UI using the existing retry query surface."
+  ]
+}

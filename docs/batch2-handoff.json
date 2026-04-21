@@ -1,0 +1,67 @@
+{
+  "version": "1.0",
+  "batch": 2,
+  "scope": {
+    "included": ["local_job_persistence", "async_stage_progression", "job_api_routes", "job_backed_results_route", "results_polling"],
+    "excluded": ["real_crawling", "background_workers", "multi-instance_safety", "final_export_generation"]
+  },
+  "routes": [
+    {
+      "id": "create_job",
+      "path": "/api/jobs",
+      "status": "implemented"
+    },
+    {
+      "id": "read_job",
+      "path": "/api/jobs/:jobId",
+      "status": "implemented"
+    },
+    {
+      "id": "results",
+      "path": "/results/:jobId",
+      "status": "implemented"
+    }
+  ],
+  "persistence": {
+    "repository": "lib/jobs.ts#getJobRepository",
+    "storageFile": "data/runtime/jobs.json (or DBOT_RUNTIME_FILE override)",
+    "model": "Persist immutable job metadata and derive stage progression/result on read."
+  },
+  "jobContract": {
+    "source": "types/dbot.ts#JobRecord",
+    "fixtureKeyValues": ["singleExperience", "multiExperience", "lowConfidence"],
+    "stageOrder": ["Discover", "Partition", "Extract", "Generate", "Validate"],
+    "terminalStates": ["completed", "failed"]
+  },
+  "resultRouteBehavior": {
+    "page": "/results/:jobId",
+    "initialLoad": "Server-loads the current snapshot by job id.",
+    "polling": "Client polls /api/jobs/:jobId every 1s until terminal state.",
+    "completionSwap": "Renders the existing workbench once result is present."
+  },
+  "tests": {
+    "domain": [
+      "test/domain.test.ts",
+      "test/job-lifecycle.test.ts"
+    ],
+    "server": [
+      "test/job-api.test.ts"
+    ],
+    "ui": [
+      "test/homepage.test.tsx",
+      "test/url-submit.test.tsx",
+      "test/results-page.test.tsx",
+      "test/workbench.test.tsx"
+    ]
+  },
+  "nextBatchRecommended": [
+    "Replace fixture-key selection with a real crawl/extract orchestration layer while preserving the same job route contract.",
+    "Introduce richer failed-job states and explicit retry semantics instead of only happy-path progression.",
+    "Move from time-derived mock results to evidence-backed partition generation without changing the one-main-DESIGN.md policy.",
+    "Generate real content for each export tab and add result-specific verification beyond placeholder readiness."
+  ],
+  "notes": [
+    "Dbot is currently a standalone folder and not initialized as a git repository.",
+    "The typecheck script intentionally builds first because Next lint adds .next type includes to tsconfig."
+  ]
+}

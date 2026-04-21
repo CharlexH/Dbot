@@ -1,0 +1,83 @@
+{
+  "version": "1.0",
+  "batch": 9,
+  "scope": {
+    "included": [
+      "lightweight_visual_hints_on_crawled_pages",
+      "evidence_backed_palette_derivation",
+      "evidence_backed_typography_derivation",
+      "page_role_component_preview_labels"
+    ],
+    "excluded": [
+      "browser_rendering",
+      "external_stylesheet_fetching",
+      "route_contract_changes",
+      "ui_redesign",
+      "export_tab_changes"
+    ]
+  },
+  "routes": [
+    {
+      "id": "read_job",
+      "path": "/api/jobs/:jobId",
+      "status": "stable"
+    },
+    {
+      "id": "results",
+      "path": "/results/:jobId",
+      "status": "stable"
+    }
+  ],
+  "evidenceModel": {
+    "source": "types/dbot.ts#CrawledPageEvidence",
+    "behavior": [
+      "Crawled pages now optionally persist themeColor, accentColors, and fontFamilies.",
+      "Hints are extracted from shallow same-origin HTML only.",
+      "These additions are internal and do not change the UI-facing result contract."
+    ]
+  },
+  "extraction": {
+    "source": "lib/orchestration.ts",
+    "behavior": [
+      "Palette tokens now prefer evidence-backed colors before preset fallback.",
+      "Typography tokens now prefer evidence-backed font-family declarations before category fallback.",
+      "Component preview labels now use page-role cues such as documentation and workspace rather than only generic surface numbering."
+    ]
+  },
+  "jobContract": {
+    "source": "types/dbot.ts#JobRecord",
+    "status": "unchanged_for_ui"
+  },
+  "tests": {
+    "updated": [
+      "test/orchestration.test.ts",
+      "test/job-api.test.ts"
+    ],
+    "full_suite": [
+      "test/domain.test.ts",
+      "test/export-generation.test.ts",
+      "test/job-lifecycle.test.ts",
+      "test/orchestration.test.ts",
+      "test/job-api.test.ts",
+      "test/results-client.test.tsx",
+      "test/results-page.test.tsx",
+      "test/workbench.test.tsx",
+      "test/homepage.test.tsx",
+      "test/url-submit.test.tsx"
+    ]
+  },
+  "verification": {
+    "commands": [
+      "npm test",
+      "npm run lint",
+      "npm run build",
+      "npm run typecheck"
+    ],
+    "status": "passing"
+  },
+  "nextBatchRecommended": [
+    "Improve visual-hint fidelity by parsing bounded same-origin stylesheet references.",
+    "Keep the current route, workbench contract, stage names, and export tab names stable.",
+    "Avoid browser rendering and UI redesign while tightening evidence-backed derived content."
+  ]
+}

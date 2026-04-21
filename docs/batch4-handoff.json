@@ -1,0 +1,88 @@
+{
+  "version": "1.0",
+  "batch": 4,
+  "scope": {
+    "included": [
+      "dedicated_export_generation",
+      "semantic_tailwind_variables",
+      "semantic_css_variables",
+      "metadata_rich_design_json",
+      "metadata_rich_design_tokens"
+    ],
+    "excluded": [
+      "retry_resume_semantics",
+      "deeper_crawl_depth",
+      "javascript_rendering",
+      "ui_redesign",
+      "route_contract_changes"
+    ]
+  },
+  "routes": [
+    {
+      "id": "create_job",
+      "path": "/api/jobs",
+      "status": "stable"
+    },
+    {
+      "id": "read_job",
+      "path": "/api/jobs/:jobId",
+      "status": "stable"
+    },
+    {
+      "id": "results",
+      "path": "/results/:jobId",
+      "status": "stable"
+    }
+  ],
+  "exports": {
+    "source": "lib/exports.ts#buildExportArtifacts",
+    "tabs": ["DESIGN.md", "Design JSON", "Tailwind v4", "CSS Variables", "Design Tokens"],
+    "design_json": "faithful machine-readable projection of the result contract plus export metadata",
+    "tailwind_v4": "semantic @theme variables for color and font tokens",
+    "css_variables": "semantic :root variable export for color and font tokens",
+    "design_tokens": "structured JSON tokens with color, typography, and meta groups"
+  },
+  "resultContract": {
+    "source": "types/dbot.ts#ResultRecord",
+    "status": "unchanged_for_ui",
+    "note": "Export content changed, but export tab names/order and the UI-facing result shape stayed stable."
+  },
+  "orchestration": {
+    "source": "lib/orchestration.ts#buildResult",
+    "note": "Orchestration now delegates export content creation to lib/exports.ts while keeping stage progression unchanged."
+  },
+  "tests": {
+    "new": [
+      "test/export-generation.test.ts"
+    ],
+    "updated": [
+      "test/job-api.test.ts"
+    ],
+    "full_suite": [
+      "test/domain.test.ts",
+      "test/export-generation.test.ts",
+      "test/job-lifecycle.test.ts",
+      "test/orchestration.test.ts",
+      "test/job-api.test.ts",
+      "test/results-page.test.tsx",
+      "test/workbench.test.tsx",
+      "test/homepage.test.tsx",
+      "test/url-submit.test.tsx"
+    ]
+  },
+  "verification": {
+    "commands": [
+      "npm test",
+      "npm run lint",
+      "npm run build",
+      "npm run typecheck"
+    ],
+    "status": "passing",
+    "note": "Build and typecheck still need to be run sequentially because both write .next."
+  },
+  "nextBatchRecommended": [
+    "Add retry/resume semantics for failed or partial jobs without changing the route contract.",
+    "Expand evidence capture beyond the tiny same-origin page set only if shallow fetch is insufficient.",
+    "Improve extraction quality for palette/typography/component previews while keeping the workbench contract stable."
+  ]
+}

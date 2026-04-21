@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "batch": 5,
+  "scope": {
+    "included": [
+      "failed_job_retry_reset",
+      "retry_metadata_on_job_record",
+      "opt_in_retry_query_on_existing_get_route"
+    ],
+    "excluded": [
+      "retry_ui",
+      "partial_crawl_resume",
+      "new_retry_route",
+      "deep_crawl_expansion",
+      "route_contract_redesign"
+    ]
+  },
+  "routes": [
+    {
+      "id": "read_job",
+      "path": "/api/jobs/:jobId",
+      "status": "stable_with_optional_retry_query"
+    },
+    {
+      "id": "results",
+      "path": "/results/:jobId",
+      "status": "stable"
+    }
+  ],
+  "retry": {
+    "source": "lib/jobs.ts#prepareJobForRetry",
+    "trigger": "GET /api/jobs/:jobId?retry=1",
+    "behavior": [
+      "Only failed jobs are reset for retry.",
+      "The failed stage is reset to pending and its error is cleared.",
+      "Earlier completed state is preserved.",
+      "retryCount and lastRetriedAt are persisted."
+    ]
+  },
+  "jobContract": {
+    "source": "types/dbot.ts#JobRecord",
+    "newFields": ["retryCount", "lastRetriedAt"],
+    "status": "unchanged_for_ui"
+  },
+  "uiBehavior": {
+    "results_client": "Still stops polling on failed jobs.",
+    "note": "Retry support is backend-only for now and can be surfaced by a later UI batch."
+  },
+  "tests": {
+    "updated": [
+      "test/job-lifecycle.test.ts",
+      "test/job-api.test.ts"
+    ],
+    "full_suite": [
+      "test/domain.test.ts",
+      "test/export-generation.test.ts",
+      "test/job-lifecycle.test.ts",
+      "test/orchestration.test.ts",
+      "test/job-api.test.ts",
+      "test/results-page.test.tsx",
+      "test/workbench.test.tsx",
+      "test/homepage.test.tsx",
+      "test/url-submit.test.tsx"
+    ]
+  },
+  "verification": {
+    "commands": [
+      "npm test",
+      "npm run lint",
+      "npm run build",
+      "npm run typecheck"
+    ],
+    "status": "passing"
+  },
+  "nextBatchRecommended": [
+    "Add partial-crawl resume semantics rather than retrying only terminal failed jobs.",
+    "Expand evidence capture beyond the tiny same-origin page set while preserving the current route/workbench contract.",
+    "Consider whether later-stage retries should invalidate downstream derived state more explicitly."
+  ]
+}

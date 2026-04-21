@@ -1,0 +1,11 @@
+.next
+node_modules
+tsconfig.tsbuildinfo
+.DS_Store
+*.log
+
+.env
+.env.local
+.env.*.local
+
+data/runtime/*.json

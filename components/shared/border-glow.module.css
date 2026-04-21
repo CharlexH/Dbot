@@ -1,0 +1,152 @@
+.card {
+  --edge-proximity: 0;
+  --cursor-angle: 45deg;
+  --edge-sensitivity: 24;
+  --color-sensitivity: calc(var(--edge-sensitivity) + 18);
+  --border-radius: 18px;
+  --glow-padding: 28px;
+  --cone-spread: 22;
+  --fill-opacity: 0.3;
+  --surface-border: rgba(215, 224, 235, 0.78);
+
+  position: relative;
+  display: block;
+  width: 100%;
+  border-radius: var(--border-radius);
+  isolation: isolate;
+  overflow: visible;
+  transform: translate3d(0, 0, 0.01px);
+}
+
+.card::before,
+.card::after,
+.edgeLight {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  transition: opacity 0.25s ease-out;
+  pointer-events: none;
+}
+
+.card:not(:hover):not(.sweepActive)::before,
+.card:not(:hover):not(.sweepActive)::after,
+.card:not(:hover):not(.sweepActive) .edgeLight {
+  opacity: 0;
+  transition: opacity 0.7s ease-in-out;
+}
+
+.card::before {
+  z-index: 0;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg, #ffffff) 0 100%) padding-box,
+    linear-gradient(rgb(255 255 255 / 0%) 0 100%) border-box,
+    var(--gradient-one) border-box,
+    var(--gradient-two) border-box,
+    var(--gradient-three) border-box,
+    var(--gradient-four) border-box,
+    var(--gradient-five) border-box,
+    var(--gradient-six) border-box,
+    var(--gradient-seven) border-box,
+    var(--gradient-base) border-box;
+  opacity: calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mask-image:
+    conic-gradient(
+      from var(--cursor-angle) at center,
+      black calc(var(--cone-spread) * 1%),
+      transparent calc((var(--cone-spread) + 13) * 1%),
+      transparent calc((100 - var(--cone-spread) - 13) * 1%),
+      black calc((100 - var(--cone-spread)) * 1%)
+    );
+  -webkit-mask-image:
+    conic-gradient(
+      from var(--cursor-angle) at center,
+      black calc(var(--cone-spread) * 1%),
+      transparent calc((var(--cone-spread) + 13) * 1%),
+      transparent calc((100 - var(--cone-spread) - 13) * 1%),
+      black calc((100 - var(--cone-spread)) * 1%)
+    );
+}
+
+.card::after {
+  z-index: 0;
+  border: 1px solid transparent;
+  background:
+    var(--gradient-one) padding-box,
+    var(--gradient-two) padding-box,
+    var(--gradient-three) padding-box,
+    var(--gradient-four) padding-box,
+    var(--gradient-five) padding-box,
+    var(--gradient-six) padding-box,
+    var(--gradient-seven) padding-box,
+    var(--gradient-base) padding-box;
+  opacity: calc(var(--fill-opacity) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mix-blend-mode: soft-light;
+  mask-image:
+    linear-gradient(to bottom, black, black),
+    radial-gradient(ellipse at 50% 50%, black 44%, transparent 68%),
+    conic-gradient(from var(--cursor-angle) at center, transparent 7%, black 16%, black 84%, transparent 93%);
+  -webkit-mask-image:
+    linear-gradient(to bottom, black, black),
+    radial-gradient(ellipse at 50% 50%, black 44%, transparent 68%),
+    conic-gradient(from var(--cursor-angle) at center, transparent 7%, black 16%, black 84%, transparent 93%);
+  mask-composite: subtract, add;
+  -webkit-mask-composite: source-out, source-over;
+}
+
+.edgeLight {
+  inset: calc(var(--glow-padding) * -1);
+  z-index: 0;
+  opacity: calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  mix-blend-mode: screen;
+  mask-image:
+    conic-gradient(
+      from var(--cursor-angle) at center,
+      black 3%,
+      transparent 12%,
+      transparent 88%,
+      black 97%
+    );
+  -webkit-mask-image:
+    conic-gradient(
+      from var(--cursor-angle) at center,
+      black 3%,
+      transparent 12%,
+      transparent 88%,
+      black 97%
+    );
+}
+
+.edgeLight::before {
+  content: "";
+  position: absolute;
+  inset: var(--glow-padding);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--glow-color),
+    inset 0 0 1px 0 var(--glow-color-60),
+    inset 0 0 3px 0 var(--glow-color-50),
+    inset 0 0 8px 0 var(--glow-color-40),
+    inset 0 0 18px 0 var(--glow-color-30),
+    inset 0 0 32px 2px var(--glow-color-20),
+    0 0 1px 0 var(--glow-color-60),
+    0 0 3px 0 var(--glow-color-50),
+    0 0 8px 0 var(--glow-color-40),
+    0 0 18px 0 var(--glow-color-30),
+    0 0 32px 2px var(--glow-color-20);
+}
+
+.sweepActive {}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  border-radius: calc(var(--border-radius) - 1px);
+  overflow: visible;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--surface-border);
+  box-shadow:
+    0 22px 48px rgba(148, 163, 184, 0.15),
+    0 6px 18px rgba(15, 23, 42, 0.08);
+}

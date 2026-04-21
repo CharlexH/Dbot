@@ -1,0 +1,89 @@
+{
+  "version": "1.0",
+  "batch": 8,
+  "scope": {
+    "included": [
+      "later_stage_retry_invalidation",
+      "validate_retry_regenerates_result",
+      "results_page_retry_affordance",
+      "partial_coverage_resume_affordance"
+    ],
+    "excluded": [
+      "extraction_redesign",
+      "new_routes",
+      "stage_name_changes",
+      "export_tab_changes",
+      "workbench_layout_redesign"
+    ]
+  },
+  "routes": [
+    {
+      "id": "read_job",
+      "path": "/api/jobs/:jobId",
+      "status": "stable_with_retry_and_resume_affordances"
+    },
+    {
+      "id": "results",
+      "path": "/results/:jobId",
+      "status": "stable_with_small_retry_resume_ui"
+    }
+  ],
+  "retry": {
+    "source": "lib/jobs.ts#prepareJobForRetry",
+    "behavior": [
+      "Retrying a failed Validate stage now restarts from Generate because failed snapshots do not persist generated results.",
+      "Retry resets the failed stage and any downstream stages back to pending.",
+      "Retry clears result on re-entry and clears extracted only when the retry restarts at or before Extract.",
+      "Retry metadata remains on the persisted job record."
+    ]
+  },
+  "ui": {
+    "sources": [
+      "components/results/results-client.tsx",
+      "components/workbench/workbench-shell.tsx"
+    ],
+    "behavior": [
+      "Failed jobs expose an in-place Retry job action on the results page.",
+      "Completed jobs with evidence.failures expose a workbench-level Resume coverage action.",
+      "Both actions call the existing GET /api/jobs/:jobId?retry=1 surface and then reuse the existing polling lifecycle."
+    ]
+  },
+  "jobContract": {
+    "source": "types/dbot.ts#JobRecord",
+    "status": "unchanged_for_ui",
+    "note": "No new route contract fields were required."
+  },
+  "tests": {
+    "updated": [
+      "test/job-lifecycle.test.ts",
+      "test/job-api.test.ts",
+      "test/results-client.test.tsx"
+    ],
+    "full_suite": [
+      "test/domain.test.ts",
+      "test/export-generation.test.ts",
+      "test/job-lifecycle.test.ts",
+      "test/orchestration.test.ts",
+      "test/job-api.test.ts",
+      "test/results-client.test.tsx",
+      "test/results-page.test.tsx",
+      "test/workbench.test.tsx",
+      "test/homepage.test.tsx",
+      "test/url-submit.test.tsx"
+    ]
+  },
+  "verification": {
+    "commands": [
+      "npm test",
+      "npm run lint",
+      "npm run build",
+      "npm run typecheck"
+    ],
+    "status": "passing"
+  },
+  "nextBatchRecommended": [
+    "Improve extraction quality for palette, typography, and component previews using the wider evidence set.",
+    "Keep the current route, workbench contract, stage names, and export tab names stable.",
+    "Avoid redesigning the UI while tightening evidence-backed derived content."
+  ]
+}

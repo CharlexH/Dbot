@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f4f7fb;
+  --panel: #ffffff;
+  --panel-alt: #edf2f7;
+  --panel-strong: #f7fafe;
+  --panel-soft: #f1f5fb;
+  --panel-contrast: #e8eef6;
+  --border: #d7e0eb;
+  --border-strong: #c5d1de;
+  --text: #0f172a;
+  --text-soft: #334155;
+  --muted: #64748b;
+  --subtle: #94a3b8;
+  --accent: #315ee7;
+  --accent-soft: #ebf1ff;
+  --success: #1f7a57;
+  --success-soft: #edf8f2;
+  --danger: #bf4a4a;
+  --danger-soft: #fff2f3;
+  --info: #315ee7;
+  --info-soft: #eef3ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(49, 94, 231, 0.06), transparent 26%),
+    linear-gradient(180deg, #f8fbff 0%, #f2f5fa 100%);
+  color: var(--text);
+  font-family: Inter Variable, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: none;
+}
+
+@keyframes reveal-up {
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+.reveal {
+  opacity: 0;
+  animation: reveal-up 0.56s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.reveal-delay-1 { animation-delay: 0ms; }
+.reveal-delay-2 { animation-delay: 120ms; }
+.reveal-delay-3 { animation-delay: 240ms; }
+.reveal-delay-4 { animation-delay: 380ms; }
+.reveal-delay-5 { animation-delay: 520ms; }
+
+@keyframes reveal-down-out {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(18px) scale(0.985);
+  }
+}
+
+@keyframes surface-rise-in {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(18px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes progress-sheen {
+  0% {
+    transform: translateX(-140%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+.homepage-hero-shell[data-state="visible"] {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0) scale(1);
+}
+
+.homepage-hero-shell[data-state="exiting"] {
+  pointer-events: none;
+  animation: reveal-down-out 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.homepage-hero-shell[data-state="hidden"] {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(18px) scale(0.985);
+  pointer-events: none;
+}
+
+.homepage-progress-shell[data-state="pending"] {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(18px) scale(0.985);
+  pointer-events: none;
+}
+
+.homepage-progress-shell[data-state="visible"] {
+  animation: surface-rise-in 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.generation-progress-fill {
+  overflow: hidden;
+}
+
+.generation-progress-sheen {
+  position: absolute;
+  inset: 0;
+  width: 32%;
+  transform: translateX(-140%);
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 12%, rgba(255, 255, 255, 0.6) 48%, rgba(255, 255, 255, 0.1) 84%, transparent 100%);
+  animation: progress-sheen 1.8s linear infinite;
+}
+
+@layer utilities {
+  .app-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.44) transparent;
+  }
+
+  .app-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .app-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .app-scrollbar::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.34);
+    background-clip: padding-box;
+  }
+
+  .app-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  .app-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.5);
+    background-clip: padding-box;
+  }
+
+  .app-scrollbar-dark {
+    scrollbar-color: rgba(203, 213, 225, 0.3) transparent;
+  }
+
+  .app-scrollbar-dark::-webkit-scrollbar-thumb {
+    background: rgba(203, 213, 225, 0.24);
+    background-clip: padding-box;
+  }
+
+  .app-scrollbar-dark:hover::-webkit-scrollbar-thumb {
+    background: rgba(203, 213, 225, 0.4);
+    background-clip: padding-box;
+  }
+}

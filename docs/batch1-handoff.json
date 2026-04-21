@@ -1,0 +1,53 @@
+{
+  "version": "1.0",
+  "batch": 1,
+  "scope": {
+    "included": ["project_foundation", "homepage_shell", "result_data_contracts", "mock_workbench"],
+    "excluded": ["auth", "real_generation_pipeline", "crawler_depth_logic", "live_export_correctness"]
+  },
+  "routes": [
+    {
+      "id": "home",
+      "path": "/",
+      "status": "implemented"
+    },
+    {
+      "id": "mock_workbench",
+      "path": "/workbench/mock",
+      "status": "implemented"
+    }
+  ],
+  "homepage": {
+    "generateRequestShape": {
+      "url": "string",
+      "selectedPresetIds": ["string"],
+      "selectedCategoryIds": ["string"]
+    },
+    "galleryCategorySource": "lib/mocks.ts#styleCategories",
+    "galleryPresetSource": "lib/mocks.ts#stylePresets"
+  },
+  "jobContract": {
+    "stageOrder": ["Discover", "Partition", "Extract", "Generate", "Validate"],
+    "statusValues": ["queued", "running", "completed", "failed"],
+    "stageStatusValues": ["pending", "running", "completed", "failed"],
+    "source": "types/dbot.ts#JobRecord"
+  },
+  "resultContract": {
+    "leftPanelGroups": ["brandSummary", "palette", "typography", "componentPreviews", "guidelines"],
+    "exportTabs": ["DESIGN.md", "Design JSON", "Tailwind v4", "CSS Variables", "Design Tokens"],
+    "sameDomainPolicy": "One main DESIGN.md result with partition appendix.",
+    "lowConfidencePolicy": "Continue generation and attach risk labels.",
+    "source": "types/dbot.ts#ResultRecord"
+  },
+  "fixtures": {
+    "singleExperience": "lib/mocks.ts#fixtureRuns.singleExperience",
+    "multiExperience": "lib/mocks.ts#fixtureRuns.multiExperience",
+    "lowConfidence": "lib/mocks.ts#fixtureRuns.lowConfidence"
+  },
+  "nextBatchRecommended": [
+    "Replace fixture-backed generate flow with a real async job record lifecycle.",
+    "Implement result route by job id instead of /workbench/mock.",
+    "Start real partition appendix rendering from crawled evidence, keeping the main-DESIGN.md policy intact.",
+    "Introduce export content generation per tab without changing tab names."
+  ]
+}

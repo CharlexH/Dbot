@@ -1,0 +1,108 @@
+{
+  "version": "1.0",
+  "batch": 3,
+  "scope": {
+    "included": [
+      "persisted_stage_state",
+      "get_driven_orchestration",
+      "shallow_same_origin_crawl",
+      "evidence_backed_result_assembly",
+      "explicit_failed_job_states"
+    ],
+    "excluded": [
+      "background_workers",
+      "javascript_rendering",
+      "deep_multi_page_crawl",
+      "high_fidelity_export_generation",
+      "retry_resume_semantics"
+    ]
+  },
+  "routes": [
+    {
+      "id": "create_job",
+      "path": "/api/jobs",
+      "status": "stable"
+    },
+    {
+      "id": "read_job",
+      "path": "/api/jobs/:jobId",
+      "status": "stable_contract_new_backend"
+    },
+    {
+      "id": "results",
+      "path": "/results/:jobId",
+      "status": "stable"
+    }
+  ],
+  "orchestration": {
+    "source": "lib/orchestration.ts#advanceJob",
+    "progression_model": "Each GET on /api/jobs/:jobId advances at most one stage for non-terminal jobs.",
+    "discover": "Fetch the submitted URL, parse same-origin anchor links, and fetch a small fixed number of same-origin pages.",
+    "failure_model": "Fail the active stage and persist stage.error plus job.failureMessage when discovery or later stages throw."
+  },
+  "jobContract": {
+    "source": "types/dbot.ts#JobRecord",
+    "stageOrder": ["Discover", "Partition", "Extract", "Generate", "Validate"],
+    "terminalStates": ["completed", "failed"],
+    "internalAdditions": ["evidence", "extracted", "result", "failureStage", "failureMessage"],
+    "note": "Live jobs no longer depend on fixtureKey-derived completion."
+  },
+  "resultContract": {
+    "source": "types/dbot.ts#ResultRecord",
+    "status": "unchanged_for_ui",
+    "criticalFields": [
+      "site",
+      "brandSummary",
+      "palette",
+      "typography",
+      "componentPreviews",
+      "guidelines",
+      "exports",
+      "partitions",
+      "riskLabels",
+      "includesPartitionAppendix"
+    ],
+    "policy": "One main DESIGN.md plus a partition appendix remains mandatory."
+  },
+  "evidenceModel": {
+    "source": "types/dbot.ts#CrawlEvidence",
+    "pageFields": ["url", "title", "headings", "description", "textSnippets"],
+    "confidenceRules": {
+      "high": "3 same-origin pages and no fetch failures",
+      "medium": "2 usable pages or minor fetch gaps",
+      "low": "Only root page or sparse evidence; generation still continues with risk labels"
+    }
+  },
+  "tests": {
+    "domain": [
+      "test/domain.test.ts",
+      "test/job-lifecycle.test.ts",
+      "test/orchestration.test.ts"
+    ],
+    "server": [
+      "test/job-api.test.ts"
+    ],
+    "ui": [
+      "test/results-page.test.tsx",
+      "test/workbench.test.tsx",
+      "test/homepage.test.tsx",
+      "test/url-submit.test.tsx"
+    ]
+  },
+  "verification": {
+    "commands": [
+      "npm test",
+      "npm run lint",
+      "npm run build",
+      "npm run typecheck"
+    ],
+    "status": "passing",
+    "note": "Run build and typecheck sequentially because both write .next."
+  },
+  "nextBatchRecommended": [
+    "Deepen the crawler and evidence model beyond shallow same-origin HTML fetch.",
+    "Improve non-DESIGN.md export fidelity and move export generation into dedicated helpers if needed.",
+    "Add retry/resume semantics for failed or partial jobs without changing the route contract.",
+    "Only consider JS-rendered crawling after the shallow-fetch seam is exhausted."
+  ]
+}
