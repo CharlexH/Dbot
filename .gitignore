@@ -1,6 +1,7 @@
 .next
 node_modules
 tsconfig.tsbuildinfo
+.playwright-cli
 .DS_Store
 *.log
 

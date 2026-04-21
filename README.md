@@ -4,6 +4,14 @@ Turn any website into `DESIGN.md` and design tokens your agent can actually use.
 
 Dbot is a local-first design extraction workbench built for designers, design engineers, and agent builders. Paste a URL, let Dbot run a bounded same-origin crawl, and get an evidence-backed package of brand signals, structured exports, and implementation-ready tokens.
 
+## Product walkthrough
+
+Three moments in the flow: submit, generate, and inspect.
+
+| Homepage | Generating | Results |
+| --- | --- | --- |
+| ![Dbot homepage](docs/screenshots/homepage.png) | ![Dbot generating progress](docs/screenshots/generation.png) | ![Dbot results workbench](docs/screenshots/results.png) |
+
 ## Why Dbot
 
 Most site-to-design tooling stops at screenshots, vague summaries, or brittle one-off prompts. Dbot is built for a more useful handoff:
